@@ -22,13 +22,15 @@
     <script>
         var raycaster = new THREE.Raycaster();
         var mouse = new THREE.Vector2();
-        var renderer = new THREE.WebGLRenderer();
+        var renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+        var camera = new THREE.PerspectiveCamera(15, window.innerWidth / window.innerHeight, 1, 500);
         camera.position.set(0, 0, 200);
-        camera.lookAt(0, 0, 0);
+        camera.lookAt(0, 4, 0);
 
         // initial variables
         var x = 10;
@@ -52,7 +54,6 @@
 
         });
         var geometry = new THREE.Geometry();
-        points.push(new THREE.Vector3(50, 0, 0));
 
 
 
@@ -65,32 +66,46 @@
         };
 
         function animate() {
-            console.log(startsarr);
-            for (var i = 0; i < startsarr.length; i++) {
-                dx = a * (values[i][1] - values[i][0]) * dt;
-                dy = (values[i][0] * (b - values[i][2]) - values[i][1]) * dt;
-                dz = (values[i][0] * values[i][1] - c * values[i][2]) * dt;
-                startsarr[i].push(new THREE.Vector3(values[i][0] + dx, values[i][1] + dy, values[i][2] + dz));
-                values[i][0] += dx;
-                values[i][1] += dy;
-                values[i][2] += dz;
-                var geometry = new THREE.BufferGeometry().setFromPoints(startsarr[i]);
-                var line = new THREE.Line(geometry, material);
-                scene.add(line);
-            }
+            // console.log(startsarr);
+            // for (var i = 0; i < startsarr.length; i++) {
+            //     dx = a * (values[i][1] - values[i][0]) * dt;
+            //     dy = (values[i][0] * (b - values[i][2]) - values[i][1]) * dt;
+            //     dz = (values[i][0] * values[i][1] - c * values[i][2]) * dt;
+            //     startsarr[i].push(new THREE.Vector3(values[i][0] + dx, values[i][1] + dy, values[i][2] + dz));
+            //     values[i][0] += dx;
+            //     values[i][1] += dy;
+            //     values[i][2] += dz;
+            //     var geometry = new THREE.BufferGeometry().setFromPoints(startsarr[i]);
+            //     var line = new THREE.Line(geometry, material);
+            //     scene.add(line);
+            // }
 
-            // calculate objects intersecting the picking ray
-            var intersects = raycaster.intersectObjects(scene.children);
             dx = a * (y - x) * dt;
             dy = (x * (b - z) - y) * dt;
             dz = (x * y - c * z) * dt;
             x = x + dx;
             y = y + dy;
             z = z + dz;
-            points.push(new THREE.Vector3(x, y, z));
-            var geometry = new THREE.BufferGeometry().setFromPoints(points);
-            var line = new THREE.Line(geometry, material);
-            scene.add(line);
+            geometry.vertices.push(new THREE.Vector3(x, y, z));
+            var line = new MeshLine();
+            line.setGeometry(geometry, function (p) {
+                return 0.5;
+            });
+            var material = new MeshLineMaterial({
+                color: new THREE.Color("rgb(255, 2, 2)"),
+                opacity: 1,
+                sizeAttenuation: 1,
+                lineWidth: 1,
+                near: 1,
+                far: 100000,
+                depthTest: false,
+                blending: THREE.AdditiveBlending,
+                transparent: true
+
+            });
+
+            var mesh = new THREE.Mesh(line.geometry, material); // this syntax could definitely be improved!
+            scene.add(mesh);
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
         }
