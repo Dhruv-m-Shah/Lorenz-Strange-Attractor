@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>My first three.js app</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+    <script src="js\THREE.MeshLine.js"></script>
+    <script>
+        var raycaster = new THREE.Raycaster();
+        var mouse = new THREE.Vector2();
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+        camera.position.set(0, 0, 200);
+        camera.lookAt(0, 0, 0);
+
+        // initial variables
+        var x = 10;
+        var y = 0;
+        var z = 0;
+        var a = 10;
+        var b = 28;
+        var c = 8 / 3;
+        var dt = 0.01;
+        // initial variables
+        starts = [];
+        startsarr = [];
+        values = [];
+        var scene = new THREE.Scene();
+        //create a blue LineBasicMaterial
+        var material = new THREE.LineBasicMaterial({
+            color: 0x32CD32,
+            linewidth: 2,
+            linecap: 'round', //ignored by WebGLRenderer
+            linejoin: 'round'
+
+        });
+        var geometry = new THREE.Geometry();
+        points.push(new THREE.Vector3(50, 0, 0));
+
+
+
+        document.onclick = function (event) {
+
+            starts.push(new THREE.Vector3(event.pageX, event.pageY, 0));
+            startsarr.push(starts);
+            values.push([event.pageX, event.pageY, 0]);
+
+        };
+
+        function animate() {
+            console.log(startsarr);
+            for (var i = 0; i < startsarr.length; i++) {
+                dx = a * (values[i][1] - values[i][0]) * dt;
+                dy = (values[i][0] * (b - values[i][2]) - values[i][1]) * dt;
+                dz = (values[i][0] * values[i][1] - c * values[i][2]) * dt;
+                startsarr[i].push(new THREE.Vector3(values[i][0] + dx, values[i][1] + dy, values[i][2] + dz));
+                values[i][0] += dx;
+                values[i][1] += dy;
+                values[i][2] += dz;
+                var geometry = new THREE.BufferGeometry().setFromPoints(startsarr[i]);
+                var line = new THREE.Line(geometry, material);
+                scene.add(line);
+            }
+
+            // calculate objects intersecting the picking ray
+            var intersects = raycaster.intersectObjects(scene.children);
+            dx = a * (y - x) * dt;
+            dy = (x * (b - z) - y) * dt;
+            dz = (x * y - c * z) * dt;
+            x = x + dx;
+            y = y + dy;
+            z = z + dz;
+            points.push(new THREE.Vector3(x, y, z));
+            var geometry = new THREE.BufferGeometry().setFromPoints(points);
+            var line = new THREE.Line(geometry, material);
+            scene.add(line);
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>
