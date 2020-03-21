@@ -1,0 +1,46 @@
+.title1 {
+    font-size: 40px;
+    z-index: 10;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    position: fixed;
+}
+
+canvas {
+    position: absolute;
+    display: block;
+    z-index: -1;
+}
+
+.wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cover {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    opacity: 0.5;
+    background-color: black;
+    z-index: 5;
+}
+
+.box {
+    display: table-cell;
+    position: absolute;
+    height: 300px;
+    width: 800px;
+    top: 50vh;
+    left: 50vw;
+    z-index: 6;
+    transform: translate(-400px, -150px);
+    line-height: 200px;
+}
